@@ -23,6 +23,37 @@ export function defaultLessonSlots(numbers=DEFAULT_LESSONS.map(l=>l.number)){
   if(!Array.isArray(numbers)||numbers.some(n=>!DEFAULT_LESSONS.some(l=>l.number===n)))throw new Error('Unbekannte Standardlektion.');
   return DEFAULT_LESSONS.filter(l=>numbers.includes(l.number)).map(l=>({start:l.start,end:l.end}));
 }
+export function migrateStarterPlans(plans,shipped){
+  const legacyIds=['beispiel-1i-di','beispiel-1i-do','beispiel-2i-mi'];
+  let changed=false;
+  const next=[];
+  for(const plan of plans){
+    if(legacyIds.includes(plan.id)&&plan.example&&!plan.isDemo){
+      changed=true;
+      // Only untouched shipped examples may be removed. Edited examples become real plans.
+      if(plan.updatedAt<=2)continue;
+      next.push({...plan,example:false,isDemo:false});
+    }else next.push(plan);
+  }
+  const demo=shipped.find(p=>p.isDemo);
+  if(changed&&demo&&!next.some(p=>p.id===demo.id)&&next.length<1000)next.unshift(JSON.parse(JSON.stringify(demo)));
+  return {plans:next,changed};
+}
+export function createLessonClock({systemNow=()=>new Date(),monotonicNow=()=>performance.now()}={}){
+  let mode='live',minute=0,anchor=0,running=false,initialMinute=0;
+  const read=()=>{
+    if(mode==='live'){const now=systemNow();return now.getHours()*60+now.getMinutes()+now.getSeconds()/60;}
+    return Math.min(1439.999,minute+(mode==='demo'&&running?Math.max(0,monotonicNow()-anchor)/60000:0));
+  };
+  const set=value=>{if(!Number.isFinite(value))return;minute=Math.max(0,Math.min(1439,value));anchor=monotonicNow();};
+  return {
+    get mode(){return mode;},get running(){return mode==='demo'&&running;},now:read,set,
+    open(plan,preview=false){const data=schedule(plan);mode=plan.isDemo?'demo':preview?'preview':'live';running=mode==='demo';initialMinute=data.start+Math.min(5,data.available/3);set(mode==='preview'?data.start+Math.min(20,data.available/3):initialMinute);},
+    step(delta){if(mode!=='live')set(read()+delta);},
+    toggle(){if(mode==='demo'){set(read());running=!running;}},
+    reset(){if(mode==='demo'){set(initialMinute);running=true;}}
+  };
+}
 export function minutes(value) {
   if (!/^\d{2}:\d{2}$/.test(value)) throw new Error('Bitte eine gültige Uhrzeit eingeben.');
   const [h,m]=value.split(':').map(Number);
@@ -108,7 +139,7 @@ export function validateCollection(raw){
     const date=/^\d{4}-\d{2}-\d{2}$/.test(p.date||'')?p.date:'';
     if(date){const d=new Date(date+'T12:00:00');if(!Number.isFinite(d.getTime())||`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`!==date)throw new Error('Ein Plan enthält ein ungültiges Datum.');}
     const weekday=date?new Date(date+'T12:00:00').getDay():Math.max(0,Math.min(6,Number(p.weekday)||0));
-    const plan={id,title:str(p.title,180)||'Unterrichtstag',className:str(p.className,80)||'Meine Klasse',topic:str(p.topic,140)||'Allgemein',date,weekday,slots:(p.slots||[]).map(s=>({start:str(s.start,5),end:str(s.end,5)})),activities,backgroundId:str(p.backgroundId,100)||'journey',example:!!p.example,updatedAt:Number(p.updatedAt)||0};
+    const plan={id,title:str(p.title,180)||'Unterrichtstag',className:str(p.className,80)||'Meine Klasse',topic:str(p.topic,140)||'Allgemein',date,weekday,slots:(p.slots||[]).map(s=>({start:str(s.start,5),end:str(s.end,5)})),activities,backgroundId:str(p.backgroundId,100)||'journey',example:!!p.example,isDemo:p.isDemo===true,updatedAt:Number(p.updatedAt)||0};
     slotList(plan);return plan;
   });
   const backgrounds={};for(const [key,item] of Object.entries(raw.assets?.backgrounds||{})){const src=safeImage(item.src);if(src&&validId(key))backgrounds[key]={name:str(item.name,100),src,prompt:str(item.prompt,5000)};}

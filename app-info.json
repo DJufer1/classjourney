@@ -1,6 +1,6 @@
 {
   "name": "ClassJourney",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "url": "https://djufer1.github.io/classjourney/",
   "repository": "https://github.com/DJufer1/classjourney",
   "uploadUrl": "https://github.com/DJufer1/classjourney/upload/main/docs",
@@ -18,5 +18,6 @@
     "atlas": "2635038:ea539c70",
     "fageAtlas": "2473918:a44f8897"
   },
-  "artRevision": 2
+  "artRevision": 2,
+  "portableUrl": "https://github.com/DJufer1/classjourney/releases/latest/download/ClassJourney-Windows-Mac.zip"
 }

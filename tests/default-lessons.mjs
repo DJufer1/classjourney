@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DEFAULT_LESSONS,defaultLessonSlots,schedule,atTime} from '../src/engine.mjs';
-const raw=JSON.parse(fs.readFileSync(new URL('../skill/tagesablauf/references/LEKTIONEN.json',import.meta.url),'utf8'));
+const raw=JSON.parse(fs.readFileSync(new URL('../skill/class-journey/references/LEKTIONEN.json',import.meta.url),'utf8'));
 assert.deepEqual(DEFAULT_LESSONS,raw.lessons);
 assert.equal(DEFAULT_LESSONS.length,10);
 assert.deepEqual(defaultLessonSlots([9,10]),[{start:'16:25',end:'17:10'},{start:'17:15',end:'18:00'}]);

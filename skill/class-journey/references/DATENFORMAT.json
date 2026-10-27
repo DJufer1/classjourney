@@ -33,6 +33,7 @@
         "slots": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["start", "end"], "properties": {"start": {"type": "string", "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"}, "end": {"type": "string", "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"}}}, "description": "Feste, nicht überlappende Lektionsfenster. Lücken sind feste Pausen."},
         "activities": {"type": "array", "maxItems": 300, "items": {"$ref": "#/$defs/activity"}},
         "backgroundId": {"type": "string", "description": "Kennung eines vorhandenen Eintrags in assets.backgrounds."},
+        "isDemo": {"type": "boolean", "default": false, "description": "Nur der Demo-Tag nutzt true und eine eigene Uhr. Neue und duplizierte echte Unterrichtstage immer false: Gerätezeit."},
         "example": {"type": "boolean"}, "updatedAt": {"type": "number"}
       }
     },

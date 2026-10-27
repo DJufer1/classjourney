@@ -1,0 +1,4 @@
+interface:
+  display_name: "Class Journey"
+  short_description: "Tagespläne mit Themenbildern für ClassJourney erstellen"
+  default_prompt: "Nutze $class-journey, um aus meinen Unterlagen einen Tagesplan mit passenden Symbolen und Themenmotiven im Hintergrund zu erstellen."
