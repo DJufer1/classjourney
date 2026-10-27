@@ -30,9 +30,10 @@ for(const file of files)await upload(file);
 if(release.draft){let latest=null;try{latest=await api('/releases/latest');}catch(error){if(error.status!==404)throw error;}await api('/releases/'+release.id,'PATCH',{draft:false,make_latest:!latest||compareVersions(version,latest.tag_name)>=0?'true':'false'});}
 const checks=[];
 for(const platform of platforms){
-  const service=new InstallerUpdates({version:previousVersion,platform,directory:path.join(process.env.RUNNER_TEMP,'classjourney-public-downloads')});
+  const fetcher=(url,options)=>fetch(url,{...options,headers:{...options.headers,...(new URL(url).origin==='https://api.github.com'?{Authorization:'Bearer '+process.env.GITHUB_TOKEN}:{})}});
+  const service=new InstallerUpdates({version:previousVersion,platform,directory:path.join(process.env.RUNNER_TEMP,'classjourney-public-downloads'),fetcher});
   const result=await service.download();if(!result.downloaded||result.version!==version)throw new Error('Published update not found.');
-  const verified=await service.verifiedInstaller(),original=files.find(file=>file.name===verified.installer.name);if(verified.sha256!==original.hash)throw new Error('Published installer differs from tested build.');checks.push({platform,previousVersion,updateVersion:result.version,publicGitHubDownloadVerified:true,sha256:verified.sha256});
+  const verified=await service.verifiedInstaller(),original=files.find(file=>file.name===verified.installer.name);if(verified.sha256!==original.hash)throw new Error('Published installer differs from tested build.');checks.push({platform,previousVersion,updateVersion:result.version,publicGitHubDownloadVerified:true,releaseLookup:'GitHub Actions authenticated API; installer and checksum downloads use no credentials',sha256:verified.sha256});
 }
 const report={release:tag,checkedAt:new Date().toISOString(),installTests:reports,publicUpdateDownloads:checks,macStatus:windowsOnly?'pending':'verified',macAutomaticSilentUpdate:false,macUpdateMethod:'Download and verify DMG, open it, replace ClassJourney.app in Applications; collection remains in separate userData folder.'};
 const reportName=windowsOnly?'ClassJourney-Updatepruefung-Windows.json':'ClassJourney-Updatepruefung.json';await upload({name:reportName,bytes:Buffer.from(JSON.stringify(report,null,2))});
