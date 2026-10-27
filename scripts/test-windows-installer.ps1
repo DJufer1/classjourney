@@ -1,5 +1,6 @@
 $ErrorActionPreference='Stop'
 $taskVersion=(Get-Content -LiteralPath 'package.json' -Raw | ConvertFrom-Json).version
+$taskPrevious=(Get-Content -LiteralPath 'desktop/test-baseline.json' -Raw | ConvertFrom-Json).previousVersion
 $taskRoot=Join-Path $env:RUNNER_TEMP ('classjourney-install-'+[guid]::NewGuid().ToString('N'))
 $taskInstall=Join-Path $taskRoot 'program'
 $taskData=Join-Path $taskRoot 'data'
@@ -18,7 +19,7 @@ function Invoke-InstallerTest([string]$taskSetup,[string]$taskMode,[string]$task
   if($taskReport.version -ne $taskExpectedVersion){throw "Wrong installed version: $($taskReport.version)"}
   return $taskReport
 }
-$taskBefore=Invoke-InstallerTest 'dist-native/1.1.9/ClassJourney-Setup-Windows-x64.exe' 'write' '1.1.9'
+$taskBefore=Invoke-InstallerTest "dist-native/$taskPrevious/ClassJourney-Setup-Windows-x64.exe" 'write' $taskPrevious
 $taskAfter=Invoke-InstallerTest "dist-native/$taskVersion/ClassJourney-Setup-Windows-x64.exe" 'read' $taskVersion
 if(-not $taskBefore.backupCreated -or -not $taskAfter.fixtureRetained){throw 'Plans or backup did not survive the update.'}
 @{system='Windows x64';previousVersion=$taskBefore.version;installedVersion=$taskAfter.version;realInstallerUpgrade=$true;ownPlansImagesAndSettingsRetained=$true;backupCreated=$true} | ConvertTo-Json | Set-Content -LiteralPath 'dist-native/update-test-windows.json' -Encoding utf8

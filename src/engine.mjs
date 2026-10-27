@@ -143,5 +143,5 @@ export function validateCollection(raw){
     slotList(plan);return plan;
   });
   const backgrounds={};for(const [key,item] of Object.entries(raw.assets?.backgrounds||{})){const src=safeImage(item.src);if(src&&validId(key))backgrounds[key]={name:str(item.name,100),src,prompt:str(item.prompt,5000)};}
-  return {format:'classroomscreen',version:1,libraryId:str(raw.libraryId,120)||'classjourney',modifiedAt:Number(raw.modifiedAt)||0,plans,assets:{backgrounds,atlas:safeImage(raw.assets?.atlas),fageAtlas:safeImage(raw.assets?.fageAtlas)},settings:{motion:raw.settings?.motion!==false,backgroundOpacity:Math.max(0,Math.min(1,Number.isFinite(Number(raw.settings?.backgroundOpacity))?Number(raw.settings.backgroundOpacity):0.32))}};
+  return {format:'classroomscreen',version:1,libraryId:str(raw.libraryId,120)||'classjourney',modifiedAt:Number(raw.modifiedAt)||0,plans,assets:{backgrounds,atlas:safeImage(raw.assets?.atlas),fageAtlas:safeImage(raw.assets?.fageAtlas)},settings:{...(['de','en','fr','es','it'].includes(raw.settings?.language)?{language:raw.settings.language}:{}),motion:raw.settings?.motion!==false,backgroundOpacity:Math.max(0,Math.min(1,Number.isFinite(Number(raw.settings?.backgroundOpacity))?Number(raw.settings.backgroundOpacity):0.32))}};
 }

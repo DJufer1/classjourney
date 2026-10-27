@@ -1,11 +1,13 @@
 ---
 name: class-journey
-description: "Erstellt aus Unterrichtsunterlagen und Klassen-Lektionszeiten mehrere Unterrichtstage für den ClassJourney: zeitliche Planung, thematisch neu generierte Symbole und Reisehintergründe sowie Einfügen in die vorhandene lokale Sammlung. Verwenden beim Aufruf «Class Journey», «ClassJourney» oder «Tagesablauf» oder beim Vorbereiten und Ergänzen dieser Classroomscreen-Dateien."
+description: "Erstellt aus Unterrichtsunterlagen und Klassen-Lektionszeiten mehrere Unterrichtstage für den ClassJourney: zeitliche Planung, thematisch neu generierte Symbole und Reisehintergründe sowie Einfügen in die vorhandene lokale Sammlung. Verwenden beim Aufruf «Class Journey», «Classroom Journey», «ClassJourney» oder «Tagesablauf» oder beim Vorbereiten und Ergänzen dieser Classroomscreen-Dateien."
 ---
 
-# Class Journey – Tagespläne für ClassJourney
+# Class Journey / Classroom Journey – Tagespläne für ClassJourney
 
 Erstelle fertig nutzbare Unterrichtstage aus der Feinplanung und den Unterlagen. Erhalte die vorhandene Anwendung, ihre Gestaltung und alle nicht betroffenen Pläne. Sprache: Deutsch (Schweiz). Die Klasse, der Themenblock und die Unterrichtszeiten kommen aus den Angaben des Nutzers, nicht aus den enthaltenen Beispielplänen.
+
+Bei einer Verknüpfung oder einem Startprompt lies diese vollständige Anweisung und die für den Auftrag relevanten Referenzen. Prüfe den Zugriff auf den im Prompt genannten ClassJourney-Ordner und fordere fehlende Freigaben über dein KI-Werkzeug an. Führe danach die hier beschriebenen Schritte für den Planungsauftrag aus. Fehlen Unterrichtsunterlagen, Klasse oder Lektionen, frage gezielt danach. Die Anweisungsdatei selbst verändert keine Werkzeugberechtigungen.
 
 ## Gespeicherte Standard-Lektionszeiten
 

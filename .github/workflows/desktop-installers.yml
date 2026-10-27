@@ -14,8 +14,8 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci --no-audit --no-fund
-      - run: npm run test:native
-      - run: node scripts/build-desktop.mjs --platform win --version 1.1.9
+      - run: npm test
+      - run: node scripts/get-native-baseline.mjs
       - run: node scripts/build-desktop.mjs --platform win
       - name: Test real installer upgrade with saved plans
         shell: pwsh
@@ -24,7 +24,7 @@ jobs:
         with:
           name: windows-installer
           path: |
-            dist-native/1.2.0/ClassJourney-Setup-Windows-x64.exe
+            dist-native/1.2.1/ClassJourney-Setup-Windows-x64.exe
             dist-native/update-test-windows.json
           if-no-files-found: error
           retention-days: 7
@@ -38,8 +38,8 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci --no-audit --no-fund
-      - run: npm run test:native
-      - run: node scripts/build-desktop.mjs --platform mac --version 1.1.9
+      - run: npm test
+      - run: node scripts/get-native-baseline.mjs
       - run: node scripts/build-desktop.mjs --platform mac
       - name: Test DMG installation and replacement on Apple Silicon
         run: node scripts/test-mac-installer.mjs
@@ -47,8 +47,8 @@ jobs:
         with:
           name: mac-installer
           path: |
-            dist-native/1.1.9/ClassJourney-Mac-universal.dmg
             dist-native/1.2.0/ClassJourney-Mac-universal.dmg
+            dist-native/1.2.1/ClassJourney-Mac-universal.dmg
             dist-native/update-test-mac-arm64.json
           if-no-files-found: error
           retention-days: 7
@@ -85,6 +85,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: node scripts/build.mjs
+      - run: node scripts/package.mjs --out dist-release
       - uses: actions/download-artifact@v4
         with:
           name: windows-installer

@@ -14,6 +14,8 @@ ZIP entpacken, den Ordner auf dem eigenen Computer ablegen und **ClassJourney.ht
 
 [Alle Downloads](https://github.com/DJufer1/classjourney/releases/latest) · [Einzelne HTML-Datei](https://github.com/DJufer1/classjourney/releases/latest/download/ClassJourney.html) · [Online ausprobieren](https://djufer1.github.io/classjourney/)
 
+Klasse, Thema und Wochentag lassen sich über kompakte Dropdowns gemeinsam filtern. Import zeigt nach unten in die Ablage, Export nach oben aus der Ablage.
+
 ## Verwenden
 
 - Windows & Mac: Den ZIP-Download vollständig entpacken, den Ordner an einem festen Ort behalten und `ClassJourney.html` öffnen. Kein Konto, kein lokaler Server und keine Installation nötig. Für schnellen Zugriff eine Verknüpfung beziehungsweise ein Alias der HTML-Datei anlegen.
@@ -21,11 +23,15 @@ ZIP entpacken, den Ordner auf dem eigenen Computer ablegen und **ClassJourney.ht
 - Die zusätzliche Webversion kann in unterstützten Browsern als App installiert werden; nach dem ersten vollständigen Laden ist sie auch offline nutzbar.
 - Die installierte App speichert ihre Sammlung als lokale Datei im festen Benutzerdatenordner «ClassJourney», getrennt von den Programmdateien. Beim ersten Wechsel von Browserdatei oder Webversion zur installierten App die Sammlung exportieren und in der App importieren. Ein Programmupdate übernimmt danach denselben Datenordner.
 - Unterrichtsdaten liegen im Browserspeicher des jeweiligen Geräts. Wichtige Pläne als Datei sichern. Kein automatischer Abgleich und keine Übermittlung der Pläne an GitHub.
-- «KI-Agent verbinden» und das danebenliegende «?» erklären die Übergabe an die eigene lokale KI. Der Knopf stellt in unterstützten Browsern einen neuen lokalen Unterordner bereit, alternativ eine ZIP-Datei. Darin liegen lesbare Pläne, einzelne Bilder, AGENTS.md, CLAUDE.md und der Skill «Class Journey» im Ordner «Anweisungen KI-Agent». Den Ordner in der KI öffnen, dort den Dateizugriff erlauben und die Startanweisung einfügen. Die Übergabe ist für ClassJourney kostenfrei; der bestehende Tarif der eigenen KI gilt weiterhin. Neue Bilder benötigen deren Bildwerkzeug. Es gibt keine automatische Agentenverbindung oder Synchronisierung. «KI-Ergebnis laden» übernimmt die von der KI erzeugte Sammlung.
+- «KI-Agent verbinden» und das danebenliegende «?» erklären die Übergabe an die eigene lokale KI. Der Knopf stellt in unterstützten Browsern einen neuen lokalen Unterordner bereit, alternativ eine ZIP-Datei. Darin liegen lesbare Pläne, einzelne Bilder, AGENTS.md, CLAUDE.md und der Skill «Class Journey» im Ordner «Anweisungen KI-Agent». Den Ordner in der KI öffnen, dort den Dateizugriff erlauben und die Startanweisung einfügen. Die Übergabe ist für ClassJourney kostenfrei; der bestehende Tarif der eigenen KI gilt weiterhin. Neue Bilder benötigen deren Bildwerkzeug. In der installierten App gibt es zwei Wege: «Verknüpfen» öffnet ein erkanntes lokales KI-Programm mit dem automatisch gefundenen ClassJourney-Planungsordner; «Startprompt kopieren» bereitet dieselben Dateien vor und kopiert den Prompt. Codex erhält einen neuen Chatentwurf mit Ordner und Prompt, Cursor und VS Code öffnen den Ordner und erhalten den Prompt über die Zwischenablage. Angeforderte Freigaben werden in der KI bestätigt. Nachrichten und Pläne werden nicht automatisch abgeglichen. «KI-Ergebnis laden» übernimmt die von der KI erzeugte Sammlung.
 
 Die Ordneranweisungen werden über [AGENTS.md](https://learn.chatgpt.com/docs/agent-configuration/agents-md) sowie eine kopierbare Startanweisung übergeben. Die Auswahl eines Ordners im Browser ersetzt nicht die Dateifreigabe im KI-Agenten.
 
 Der Demo-Tag startet beim Öffnen fünf Minuten nach Unterrichtsbeginn. Seine Uhr läuft unabhängig von der Systemzeit und lässt sich pausieren, neu starten und verstellen. Die Vorschau für echte Pläne ist ein bewusst gewählter Vorbereitungsmodus.
+
+## Sprachen
+
+Die Oberfläche, der Demo-Tag, Startprompts und native Bestätigungen stehen in Deutsch, Englisch, Französisch, Spanisch und Italienisch zur Verfügung. Die Auswahl oben wird lokal gespeichert. Eigene Plantexte werden nicht automatisch übersetzt. Dateinamen und die ausführlichen deutschen Originalanweisungen des Skills bleiben gleich; der KI-Startprompt verlangt Antworten in der gewählten Sprache.
 
 ## Aktualisieren
 
@@ -35,9 +41,9 @@ Der Demo-Tag startet beim Öffnen fünf Minuten nach Unterrichtsbeginn. Seine Uh
 
 In der installierten App: «Updates → Auf Updates prüfen → Update herunterladen → Installer öffnen». Nur neuere reguläre Versionen aus DJufer1/classjourney werden angeboten. Der Download wird auf Vollständigkeit und SHA-256-Prüfsumme geprüft und vor dem Öffnen erneut geprüft. Vor der Installation wird die Sammlung im Benutzerdatenordner unter `backups/` gesichert. Windows: Setup ausführen. Mac: die App in «Programme» ersetzen. Die App installiert sich nicht still im Hintergrund.
 
-Der GitHub-Workflow «Build and verify desktop installers» baut beide Installer. Er installiert eine ältere Testversion 1.1.9, speichert eine vollständige Testsammlung mit eigenem Plan und Bildern, installiert/ersetzt mit der aktuellen Version und prüft die unveränderten Daten. Der gleiche Mac-Installer wird auf Apple Silicon und Intel getestet. Erst nach erfolgreichen Tests werden die Installer beim vorhandenen Release veröffentlicht, über den Produktions-Update-Code öffentlich heruntergeladen und erneut geprüft. Ein Prüfbericht liegt beim Release.
+Der GitHub-Workflow «Build and verify desktop installers» baut beide Installer. Er lädt den echten bisherigen Installer laut `desktop/test-baseline.json` von GitHub, installiert ihn, speichert eine vollständige Testsammlung mit eigenem Plan und Bildern, installiert/ersetzt mit der aktuellen Version und prüft die unveränderten Daten. Der gleiche Mac-Installer wird auf Apple Silicon und Intel getestet. Erst nach erfolgreichen Tests werden die Installer mit dem portablen Ordner und der Browserdatei als Release veröffentlicht, über den Produktions-Update-Code öffentlich heruntergeladen und erneut geprüft. Ein Prüfbericht liegt beim Release.
 
-Für neue Veröffentlichungen die Versionsnummer in `package.json` und `app-info.json` sowie die Versionspfade im Workflow aktualisieren, den passenden Release anlegen und den Workflow starten. Die Signierung für die Verteilung benötigt eigene Zertifikate; die Pipeline enthält keine Zugangsdaten. Persönliche Unterrichtssammlungen gehören nicht in dieses öffentliche Repository.
+Für neue Veröffentlichungen die Versionsnummer in `package.json` und `app-info.json` sowie die Versionspfade im Workflow aktualisieren, die bisherige Version in `desktop/test-baseline.json` eintragen und den Workflow starten (der Release wird als Entwurf angelegt). Die Signierung für die Verteilung benötigt eigene Zertifikate; die Pipeline enthält keine Zugangsdaten. Persönliche Unterrichtssammlungen gehören nicht in dieses öffentliche Repository.
 
 ## Quelle und Bilder
 

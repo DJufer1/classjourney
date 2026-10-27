@@ -1,7 +1,7 @@
 {
   "name": "classjourney",
   "productName": "ClassJourney",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Lokaler Unterrichtsbildschirm mit Tagesplanung und Themenbildern",
   "author": "DJufer1",
   "homepage": "https://github.com/DJufer1/classjourney",
@@ -11,10 +11,12 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "desktop": "electron .",
-    "test:native": "node --test tests/native-updates.mjs tests/native-storage.mjs",
+    "test": "node --test tests/*.mjs",
+    "test:native": "node --test tests/native-updates.mjs tests/native-storage.mjs tests/native-agent.mjs",
     "build:desktop": "node scripts/build-desktop.mjs"
   },
   "devDependencies": {
+    "acorn": "8.19.0",
     "electron": "45.0.0",
     "electron-builder": "26.18.0"
   }

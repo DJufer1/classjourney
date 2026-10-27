@@ -6,5 +6,9 @@ contextBridge.exposeInMainWorld('classJourneyDesktop',{
   checkUpdates:()=>ipcRenderer.invoke('classjourney:check-update'),
   downloadUpdate:()=>ipcRenderer.invoke('classjourney:download-update'),
   openInstaller:()=>ipcRenderer.invoke('classjourney:open-installer'),
+  agentInfo:language=>ipcRenderer.invoke('classjourney:agent-info',language),
+  showAgentFolder:()=>ipcRenderer.invoke('classjourney:agent-folder'),
+  linkAgent:(id,files,language)=>ipcRenderer.invoke('classjourney:link-agent',id,files,language),
+  prepareAgentPrompt:(files,language)=>ipcRenderer.invoke('classjourney:prepare-agent-prompt',files,language),
   onUpdateProgress:callback=>{const listener=(_event,percent)=>callback(percent);ipcRenderer.on('classjourney:update-progress',listener);return()=>ipcRenderer.removeListener('classjourney:update-progress',listener);}
 });
