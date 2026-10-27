@@ -16,11 +16,7 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 }
 .topbar { background: #fff; border-bottom-color: #e4e9f0; }
 .brand { letter-spacing: -.7px; color: #253d4b; }
-.brand-mark { position: relative; background: #167d85; color: #fffaf0; border-radius: 9px; }
-.brand-mark::after {
-  content: ''; position: absolute; width: 6px; height: 6px;
-  right: -2px; top: -2px; background: #f3bf69; border: 2px solid #fff; border-radius: 50%;
-}
+.brand-icon { display: block; width: 34px; height: 34px; flex-shrink: 0; object-fit: contain; }
 .top-actions > .icon-button:hover { background: #edf5f6; color: #127c84; }
 .library-hero { padding-left: 16px; border-left: 3px solid #e9b663; }
 .hero-copy > .eyebrow { color: #518c99; }

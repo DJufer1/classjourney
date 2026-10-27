@@ -26,7 +26,7 @@ jobs:
         with:
           name: windows-installer
           path: |
-            dist-native/1.2.2/ClassJourney-Setup-Windows-x64.exe
+            dist-native/1.2.3/ClassJourney-Setup-Windows-x64.exe
             dist-native/update-test-windows.json
           if-no-files-found: error
           retention-days: 7
@@ -51,8 +51,8 @@ jobs:
         with:
           name: mac-installer
           path: |
-            dist-native/1.2.0/ClassJourney-Mac-universal.dmg
             dist-native/1.2.2/ClassJourney-Mac-universal.dmg
+            dist-native/1.2.3/ClassJourney-Mac-universal.dmg
             dist-native/update-test-mac-arm64.json
           if-no-files-found: error
           retention-days: 7

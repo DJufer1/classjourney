@@ -5,6 +5,6 @@ module.exports={
   directories:{output:'dist-native'},publish:null,
   win:{target:[{target:'nsis',arch:['x64']}],icon:'assets/icon-512.png',artifactName:'ClassJourney-Setup-Windows-x64.exe'},
   nsis:{include:'desktop/installer.nsh',oneClick:false,perMachine:false,allowElevation:false,allowToChangeInstallationDirectory:true,createDesktopShortcut:true,deleteAppDataOnUninstall:false,runAfterFinish:true,installerLanguages:['de_DE','en_US','fr_FR','es_ES','it_IT'],displayLanguageSelector:true},
-  mac:{target:[{target:'dmg',arch:['universal']}],icon:'assets/icon-512.png',category:'public.app-category.education',artifactName:'ClassJourney-Mac-universal.dmg',identity:'-',hardenedRuntime:true,entitlements:'desktop/entitlements.mac.plist',entitlementsInherit:'desktop/entitlements.mac.plist'},
+  mac:{target:[{target:'dmg',arch:['universal']}],icon:'assets/icon-1024.png',category:'public.app-category.education',artifactName:'ClassJourney-Mac-universal.dmg',identity:'-',hardenedRuntime:true,entitlements:'desktop/entitlements.mac.plist',entitlementsInherit:'desktop/entitlements.mac.plist'},
   dmg:{title:'ClassJourney ${version}'}
 };
