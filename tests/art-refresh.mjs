@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {artFingerprint,refreshBuiltinArt} from '../src/engine.mjs';
+const old={backgrounds:{resources:{src:'old-resource',name:'Alt'},journey:{src:'old-journey'}},atlas:'old-atlas',fageAtlas:'old-fage'};
+const shipped={backgrounds:{resources:{src:'new-resource',name:'Neu'},journey:{src:'new-journey'},room:{src:'new-room'}},atlas:'new-atlas',fageAtlas:'new-fage'};
+const previous={backgrounds:{resources:artFingerprint('old-resource'),journey:artFingerprint('old-journey')},atlas:artFingerprint('old-atlas'),fageAtlas:artFingerprint('old-fage')};
+const current=structuredClone(old);current.backgrounds.journey={src:'my-own-journey',name:'Mein Bild'};current.backgrounds.private={src:'private-source',name:'Eigener Hintergrund'};current.fageAtlas='my-fage-atlas';
+assert.equal(refreshBuiltinArt(current,shipped,previous),true);
+assert.equal(current.backgrounds.resources.src,'new-resource');
+assert.equal(current.backgrounds.room.src,'new-room');
+assert.equal(current.backgrounds.journey.src,'my-own-journey');
+assert.equal(current.backgrounds.private.src,'private-source');
+assert.equal(current.atlas,'new-atlas');assert.equal(current.fageAtlas,'my-fage-atlas');
+assert.equal(refreshBuiltinArt(current,shipped,previous),false);
+console.log('Passed: shipped artwork refreshes once; custom backgrounds and custom atlases remain intact.');

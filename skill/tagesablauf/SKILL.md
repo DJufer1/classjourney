@@ -28,7 +28,7 @@ Die Bildwelt wird aus den konkreten Unterlagen abgeleitet und orientiert sich an
 
 ### Einheitlicher Stil
 
-- Ansprechend für Jugendliche und FaGe-Lernende: eine freundliche, charaktervolle Illustrationswelt mit bewussten Farbakzenten, ohne überladen zu wirken. Klare Formen, sanfte Papieroptik, gut erkennbare thematische Szenen. Salbei, Nebelblau, Creme und Ocker können die Basis sein; passende kräftigere Akzente sind erwünscht. Keine pauschal ausgewaschenen oder nüchternen Bilder.
+- Ansprechend für Jugendliche und FaGe-Lernende: eine frische, charaktervolle Editorial-Illustrationswelt mit klaren, plastischen Papierformen und dezenter 2.5D-Tiefe. Verwende satte, harmonische Akzente in Petrol, Kobaltblau, Apricot, Flieder und Sonnengelb; pro Szene wenige aufeinander abgestimmte Hauptfarben. Die Motive sollen ausdrucksstark und thematisch sofort erkennbar sein. Keine ausgewaschenen Beigefilter, nebligen Aquarelllandschaften, klinischen Katalogbilder oder kindlichen Figuren. Die Bildwelt bleibt grosszügig und übersichtlich, mit ruhiger heller Mitte für die weissen Auftragskarten.
 - Symbole, Hintergrund und Karten gehören visuell zusammen. Keine kräftigen Regenbogenfarben, Neonfarben, hektischen Muster oder kindlichen Maskottchen. Rot bleibt als Warnfarbe für zeitliche Überhänge frei.
 - Prüfe jedes generierte Bild sichtbar. Wichtiger als dekorative Fülle sind fachlicher Bezug, Verständlichkeit und Lesbarkeit des Screens.
 

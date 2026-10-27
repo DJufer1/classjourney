@@ -1,6 +1,24 @@
 export const DAYS = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
 export const DEFAULT_LESSONS = [{"number":1,"start":"08:15","end":"09:00"},{"number":2,"start":"09:00","end":"09:45"},{"number":3,"start":"10:15","end":"11:00"},{"number":4,"start":"11:05","end":"11:50"},{"number":5,"start":"11:55","end":"12:40"},{"number":6,"start":"13:45","end":"14:30"},{"number":7,"start":"14:35","end":"15:20"},{"number":8,"start":"15:35","end":"16:20"},{"number":9,"start":"16:25","end":"17:10","marker":"*"},{"number":10,"start":"17:15","end":"18:00","startAssumed":true}];
 export const ICONS = {idea:0,puzzle:1,break:2,notebook:3,talk:4,check:5,health:6,hygiene:7,care:8,mobility:9,resources:10,rest:11};
+export function artFingerprint(value){
+  if(typeof value!=='string')return '';
+  let hash=2166136261;
+  for(let i=0;i<value.length;i++)hash=Math.imul(hash^value.charCodeAt(i),16777619)>>>0;
+  return value.length+':'+hash.toString(16);
+}
+export function refreshBuiltinArt(current,shipped,previous={}){
+  const matches=(src,signature)=>typeof signature==='string'&&typeof src==='string'&&String(src.length)===signature.split(':')[0]&&artFingerprint(src)===signature;
+  let changed=false;
+  for(const [id,asset] of Object.entries(shipped.backgrounds)){
+    const old=current.backgrounds[id];
+    if(!old||matches(old.src,previous.backgrounds?.[id])){if(old?.src!==asset.src){current.backgrounds[id]=asset;changed=true;}}
+  }
+  for(const key of ['atlas','fageAtlas'])if(!current[key]||matches(current[key],previous[key])){
+    if(current[key]!==shipped[key]){current[key]=shipped[key];changed=true;}
+  }
+  return changed;
+}
 export function defaultLessonSlots(numbers=DEFAULT_LESSONS.map(l=>l.number)){
   if(!Array.isArray(numbers)||numbers.some(n=>!DEFAULT_LESSONS.some(l=>l.number===n)))throw new Error('Unbekannte Standardlektion.');
   return DEFAULT_LESSONS.filter(l=>numbers.includes(l.number)).map(l=>({start:l.start,end:l.end}));
@@ -94,5 +112,5 @@ export function validateCollection(raw){
     slotList(plan);return plan;
   });
   const backgrounds={};for(const [key,item] of Object.entries(raw.assets?.backgrounds||{})){const src=safeImage(item.src);if(src&&validId(key))backgrounds[key]={name:str(item.name,100),src,prompt:str(item.prompt,5000)};}
-  return {format:'classroomscreen',version:1,libraryId:str(raw.libraryId,120)||'classjourney',modifiedAt:Number(raw.modifiedAt)||0,plans,assets:{backgrounds,atlas:safeImage(raw.assets?.atlas),fageAtlas:safeImage(raw.assets?.fageAtlas)},settings:{motion:raw.settings?.motion!==false,backgroundOpacity:Math.max(0,Math.min(0.65,Number.isFinite(Number(raw.settings?.backgroundOpacity))?Number(raw.settings.backgroundOpacity):0.32))}};
+  return {format:'classroomscreen',version:1,libraryId:str(raw.libraryId,120)||'classjourney',modifiedAt:Number(raw.modifiedAt)||0,plans,assets:{backgrounds,atlas:safeImage(raw.assets?.atlas),fageAtlas:safeImage(raw.assets?.fageAtlas)},settings:{motion:raw.settings?.motion!==false,backgroundOpacity:Math.max(0,Math.min(1,Number.isFinite(Number(raw.settings?.backgroundOpacity))?Number(raw.settings.backgroundOpacity):0.32))}};
 }
