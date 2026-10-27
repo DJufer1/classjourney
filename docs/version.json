@@ -1,0 +1,9 @@
+{
+  "name": "ClassJourney",
+  "version": "1.0.0",
+  "url": "https://djufer1.github.io/classjourney/",
+  "repository": "https://github.com/DJufer1/classjourney",
+  "uploadUrl": "https://github.com/DJufer1/classjourney/upload/main/docs",
+  "updateUrl": "https://djufer1.github.io/classjourney/version.json",
+  "downloadUrl": "https://djufer1.github.io/classjourney/ClassJourney.html"
+}
