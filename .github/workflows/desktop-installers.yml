@@ -24,7 +24,7 @@ jobs:
         with:
           name: windows-installer
           path: |
-            dist-native/1.2.1/ClassJourney-Setup-Windows-x64.exe
+            dist-native/1.2.2/ClassJourney-Setup-Windows-x64.exe
             dist-native/update-test-windows.json
           if-no-files-found: error
           retention-days: 7
@@ -48,7 +48,7 @@ jobs:
           name: mac-installer
           path: |
             dist-native/1.2.0/ClassJourney-Mac-universal.dmg
-            dist-native/1.2.1/ClassJourney-Mac-universal.dmg
+            dist-native/1.2.2/ClassJourney-Mac-universal.dmg
             dist-native/update-test-mac-arm64.json
           if-no-files-found: error
           retention-days: 7
@@ -73,8 +73,31 @@ jobs:
           path: dist-native/update-test-mac-x64.json
           if-no-files-found: error
           retention-days: 7
+  publish-windows:
+    needs: windows
+    if: github.repository == 'DJufer1/classjourney'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: node scripts/build.mjs
+      - run: node scripts/package.mjs --out dist-release
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-installer
+          path: artifacts/windows
+      - name: Publish verified Windows installer first
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/publish-desktop.mjs --windows-only
   publish:
-    needs: [windows, mac, mac-intel]
+    needs: [windows, mac, mac-intel, publish-windows]
     if: github.repository == 'DJufer1/classjourney'
     runs-on: ubuntu-latest
     timeout-minutes: 15

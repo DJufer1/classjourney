@@ -10,5 +10,7 @@ contextBridge.exposeInMainWorld('classJourneyDesktop',{
   showAgentFolder:()=>ipcRenderer.invoke('classjourney:agent-folder'),
   linkAgent:(id,files,language)=>ipcRenderer.invoke('classjourney:link-agent',id,files,language),
   prepareAgentPrompt:(files,language)=>ipcRenderer.invoke('classjourney:prepare-agent-prompt',files,language),
+  consumeAgentRequest:()=>ipcRenderer.invoke('classjourney:consume-agent-request'),
+  onAgentRequest:callback=>{const listener=()=>callback();ipcRenderer.on('classjourney:agent-request',listener);return()=>ipcRenderer.removeListener('classjourney:agent-request',listener);},
   onUpdateProgress:callback=>{const listener=(_event,percent)=>callback(percent);ipcRenderer.on('classjourney:update-progress',listener);return()=>ipcRenderer.removeListener('classjourney:update-progress',listener);}
 });

@@ -1,5 +1,6 @@
 module.exports={
   appId:'ch.djufer.classjourney',productName:'ClassJourney',asar:true,
+  protocols:[{name:'ClassJourney',schemes:['classjourney']}],
   files:['desktop/**','src/engine.mjs','src/updates.mjs','src/i18n.mjs','content/translations.json','docs/ClassJourney.html','assets/icon-512.png','package.json'],
   directories:{output:'dist-native'},publish:null,
   win:{target:[{target:'nsis',arch:['x64']}],icon:'assets/icon-512.png',artifactName:'ClassJourney-Setup-Windows-x64.exe'},

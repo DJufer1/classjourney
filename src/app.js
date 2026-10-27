@@ -157,6 +157,8 @@ async function handleAction(action,el){
     case'export-html':download('ClassJourney.html',portableHTML(),'text/html;charset=utf-8');toast('Deine fertige Browserdatei wird heruntergeladen.');break;
     case'export-json':download('Sammlung.classroomscreen.json',JSON.stringify(state),'application/json');break;
     case'export-ai':await exportWorkspace();break;
+    case'copy-browser-agent-prompt':await copyBrowserAgentPrompt();break;
+    case'open-desktop-agent':openDesktopAgent();break;
     case'connect-agent':if(screen==='editor')toast('Speichere zuerst den bearbeiteten Unterrichtstag.');else await connectAgent();break;
     case'agent-help':agentHelp();break;
     case'agent-folder':await provideAgentFolder();break;
@@ -189,6 +191,7 @@ window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installProm
 window.addEventListener('resize',()=>{if(screen==='lesson')updateLesson();});
 if(matchMedia('(prefers-reduced-motion:reduce)').matches)state.settings.motion=false;
 if(desktop)desktop.onUpdateProgress(percent=>{const result=byId('update-result');if(result)result.textContent='Installer wird geladen … '+percent+' %';});
-openStorage();render();
+if(desktop?.onAgentRequest)desktop.onAgentRequest(()=>{if(screen==='editor')toast('Speichere zuerst den bearbeiteten Unterrichtstag.');else connectAgent();});
+openStorage().then(async()=>{if(desktop?.consumeAgentRequest&&await desktop.consumeAgentRequest())await connectAgent();});render();
 // WORKSPACE_FUNCTIONS
 })();

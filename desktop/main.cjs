@@ -3,6 +3,7 @@ const path=require('node:path');
 const fs=require('node:fs/promises');
 const {pathToFileURL}=require('node:url');
 const {createHash}=require('node:crypto');
+const {isAgentLink}=require('./protocol.cjs');
 
 const htmlPath=path.join(__dirname,'../docs/ClassJourney.html'),appURL=pathToFileURL(htmlPath).href;
 const testMode=process.argv.find(arg=>arg.startsWith('--self-test='))?.split('=')[1];
@@ -12,6 +13,9 @@ const dataDirectory=testMode?testDirectory:path.join(app.getPath('appData'),app.
 require('node:fs').mkdirSync(dataDirectory,{recursive:true});
 app.setPath('userData',dataDirectory);
 let window=null,store,updates,quitFlushed=false,nativeLanguage='de',nativeTranslate=message=>message;
+let requestedAgent=process.argv.some(isAgentLink),rendererReady=false,appInitialized=false;
+function requestAgentPanel(){requestedAgent=true;if(window&&rendererReady){requestedAgent=false;if(window.isMinimized())window.restore();window.show();window.focus();window.webContents.send('classjourney:agent-request');}else if(!window&&appInitialized)createWindow();}
+if(!testMode)app.on('open-url',(event,url)=>{if(isAgentLink(url)){event.preventDefault();requestAgentPanel();}});
 
 function allowedExternal(value){try{const url=new URL(value);return url.protocol==='https:'&&((url.hostname==='github.com'&&url.pathname.startsWith('/DJufer1/classjourney'))||url.hostname==='djufer1.github.io');}catch{return false;}}
 function external(value){if(allowedExternal(value))shell.openExternal(value);}
@@ -46,11 +50,12 @@ async function selfTest(){
 }
 
 async function createWindow(){
+  rendererReady=false;
   window=new BrowserWindow({width:1360,height:900,minWidth:820,minHeight:620,title:'ClassJourney',backgroundColor:'#f6f8f8',icon:path.join(__dirname,'../assets/icon-512.png'),autoHideMenuBar:true,webPreferences:{preload:path.join(__dirname,'preload.cjs'),contextIsolation:true,nodeIntegration:false,sandbox:true,webSecurity:true}});
   window.webContents.setWindowOpenHandler(({url})=>{external(url);return {action:'deny'};});
   window.webContents.on('will-navigate',(event,url)=>{if(url!==appURL){event.preventDefault();external(url);}});
   window.webContents.on('will-attach-webview',event=>event.preventDefault());
-  window.on('closed',()=>{window=null;});
+  window.on('closed',()=>{window=null;rendererReady=false;});
   const menu=[...(process.platform==='darwin'?[{role:'appMenu'}]:[]),{role:'editMenu'},{role:'viewMenu'},{role:'windowMenu'}];
   Menu.setApplicationMenu(Menu.buildFromTemplate(menu));
   await window.loadFile(htmlPath);
@@ -61,12 +66,14 @@ else app.whenReady().then(async()=>{
   const {CollectionStore}=await import('./store.mjs'),{InstallerUpdates}=await import('./update-service.mjs');
   store=new CollectionStore(dataDirectory);
   if(testMode){await selfTest();app.exit(0);return;}
+  if(app.isPackaged)app.setAsDefaultProtocolClient('classjourney');
   const {translateText,normalizedLanguage,formatMessage}=await import('../src/i18n.mjs');
   nativeLanguage=normalizedLanguage((await store.load())?.settings?.language);
   nativeTranslate=message=>translateText(message,nativeLanguage);
   const t=message=>nativeTranslate(message);
   updates=new InstallerUpdates({version:app.getVersion(),platform:process.platform,directory:path.join(dataDirectory,'updates'),onProgress:percent=>{if(window&&!window.isDestroyed())window.webContents.send('classjourney:update-progress',percent);}});
   handle('info',()=>({version:app.getVersion(),platform:process.platform,packaged:app.isPackaged}));
+  handle('consume-agent-request',()=>{rendererReady=true;const requested=requestedAgent;requestedAgent=false;return requested;});
   handle('load',()=>store.load());
   handle('save',async data=>{const saved=await store.save(data);nativeLanguage=normalizedLanguage(data?.settings?.language);return saved;});
   handle('check-update',()=>updates.check());
@@ -99,9 +106,9 @@ else app.whenReady().then(async()=>{
     const error=await shell.openPath(pending.path);if(error)throw new Error('Der Installer konnte nicht geöffnet werden: '+error);
     setTimeout(()=>app.quit(),400);return {opened:true};
   });
-  await createWindow();
+  appInitialized=true;await createWindow();
   app.on('activate',()=>{if(!window)createWindow();});
 }).catch(error=>{console.error(error.message);if(testMode)app.exit(1);else{dialog.showErrorBox('ClassJourney konnte nicht starten',error.message);app.exit(1);}});
-app.on('second-instance',()=>{if(window){if(window.isMinimized())window.restore();window.focus();}});
+app.on('second-instance',(_event,args)=>{if(args.some(isAgentLink))requestAgentPanel();if(window){if(window.isMinimized())window.restore();window.focus();}});
 app.on('window-all-closed',()=>{if(process.platform!=='darwin')app.quit();});
 app.on('before-quit',event=>{if(!quitFlushed&&store){event.preventDefault();store.flush().finally(()=>{quitFlushed=true;app.quit();});}});
