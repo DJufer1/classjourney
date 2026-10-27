@@ -1,0 +1,103 @@
+name: Build and verify desktop installers
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run test:native
+      - run: node scripts/build-desktop.mjs --platform win --version 1.1.9
+      - run: node scripts/build-desktop.mjs --platform win
+      - name: Test real installer upgrade with saved plans
+        shell: pwsh
+        run: ./scripts/test-windows-installer.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: |
+            dist-native/1.2.0/ClassJourney-Setup-Windows-x64.exe
+            dist-native/update-test-windows.json
+          if-no-files-found: error
+          retention-days: 7
+  mac:
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run test:native
+      - run: node scripts/build-desktop.mjs --platform mac --version 1.1.9
+      - run: node scripts/build-desktop.mjs --platform mac
+      - name: Test DMG installation and replacement on Apple Silicon
+        run: node scripts/test-mac-installer.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mac-installer
+          path: |
+            dist-native/1.1.9/ClassJourney-Mac-universal.dmg
+            dist-native/1.2.0/ClassJourney-Mac-universal.dmg
+            dist-native/update-test-mac-arm64.json
+          if-no-files-found: error
+          retention-days: 7
+  mac-intel:
+    needs: mac
+    runs-on: macos-15-intel
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@v4
+        with:
+          name: mac-installer
+          path: dist-native
+      - name: Test the same universal DMGs on Intel
+        run: node scripts/test-mac-installer.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mac-intel-test
+          path: dist-native/update-test-mac-x64.json
+          if-no-files-found: error
+          retention-days: 7
+  publish:
+    needs: [windows, mac, mac-intel]
+    if: github.repository == 'DJufer1/classjourney'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-installer
+          path: artifacts/windows
+      - uses: actions/download-artifact@v4
+        with:
+          name: mac-installer
+          path: artifacts/mac
+      - uses: actions/download-artifact@v4
+        with:
+          name: mac-intel-test
+          path: artifacts/mac-intel
+      - name: Publish installers and verify public update downloads
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/publish-desktop.mjs

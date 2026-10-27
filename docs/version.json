@@ -19,5 +19,7 @@
     "fageAtlas": "2473918:a44f8897"
   },
   "artRevision": 2,
-  "portableUrl": "https://github.com/DJufer1/classjourney/releases/latest/download/ClassJourney-Windows-Mac.zip"
+  "portableUrl": "https://github.com/DJufer1/classjourney/releases/latest/download/ClassJourney-Windows-Mac.zip",
+  "windowsInstallerUrl": "https://github.com/DJufer1/classjourney/releases/latest/download/ClassJourney-Setup-Windows-x64.exe",
+  "macInstallerUrl": "https://github.com/DJufer1/classjourney/releases/latest/download/ClassJourney-Mac-universal.dmg"
 }
