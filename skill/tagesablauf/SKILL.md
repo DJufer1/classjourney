@@ -7,9 +7,15 @@ description: "Erstellt aus Unterrichtsunterlagen und Klassen-Lektionszeiten mehr
 
 Erstelle fertig nutzbare Unterrichtstage aus der Feinplanung und den Unterlagen. Erhalte die vorhandene Anwendung, ihre Gestaltung und alle nicht betroffenen Pläne. Sprache: Deutsch (Schweiz). Die Klasse, der Themenblock und die Unterrichtszeiten kommen aus den Angaben des Nutzers, nicht aus den enthaltenen Beispielplänen.
 
+## Gespeicherte Standard-Lektionszeiten
+
+Für die Default-Version und die Zusammenarbeit mit D. Jufer gelten die zehn Zeitfenster in [references/LEKTIONEN.json](references/LEKTIONEN.json). Nutze sie ohne erneute Nachfrage, wenn Lektionsnummern genannt werden. Wähle nur die Lektionen, die der betreffenden Klasse an diesem Tag zugeordnet sind; das Standardraster bedeutet nicht, dass jede Klasse alle zehn Lektionen besucht. Wenn diese Auswahl fehlt, frage nach Klasse, Tag und Lektionsnummern. Ausdrücklich abweichende Zeiten haben Vorrang.
+
+Lektion 9 enthält das vom Nutzer angegebene Sternchen; seine Bedeutung wurde nicht angegeben. Für Lektion 10 ist das Ende 18:00 bestätigt; der Beginn 17:15 wurde aus 45 Minuten abgeleitet und bleibt eine gekennzeichnete Annahme. Die Pausen einschliesslich Mittagspause ergeben sich aus den Lücken der ausgewählten Lektionen. In einer einzelnen HTML-Datei ist das Raster zusätzlich im Element `default-lessons` enthalten.
+
 ## Eingaben und Planung
 
-1. Lies die übergebenen Unterlagen und die bestehende Sammlung. Erfrage nur fehlende Informationen, die für die Planung nötig sind: Klasse, Wochentag beziehungsweise Datum und die Zeitfenster der Lektionen. Bereits bekannte Stundenraster derselben Klasse am selben Wochentag dürfen wiederverwendet werden; mache ihre Verwendung erkennbar. Ein fehlendes Datum ist erlaubt, wenn ein Wochentag vorliegt.
+1. Lies die übergebenen Unterlagen und die bestehende Sammlung. Erfrage nur fehlende Informationen, die für die Planung nötig sind: Klasse, Wochentag beziehungsweise Datum und die zugehörigen Lektionsnummern oder ausdrücklich abweichenden Zeitfenster. Verwende sonst das gespeicherte Standardraster. Bereits bekannte Stundenraster derselben Klasse am selben Wochentag dürfen wiederverwendet werden; mache ihre Verwendung erkennbar. Ein fehlendes Datum ist erlaubt, wenn ein Wochentag vorliegt.
 2. Erhalte die didaktische Reihenfolge, die Ziele und ausdrücklich angegebenen Dauern. Wo Dauern fehlen, schlage realistische Dauern vor und kennzeichne sie bei der Übergabe als geschätzt.
 3. Jeder Abschnitt erhält einen klaren Titel, eine Dauer in ganzen Minuten, gegebenenfalls einen kurzen handlungsorientierten Auftrag und ein passendes Bild. Der Text soll auf einer projizierten Karte lesbar bleiben: Titel möglichst 2–6 Wörter, Auftrag meist 1–2 kurze Sätze. Keine Lösungen, Lehrpersonennotizen oder personenbezogenen Falldaten auf den öffentlichen Screen übernehmen.
 4. Lücken zwischen den Lektionsfenstern sind feste Pausen. Aufträge können über eine solche Pause hinweg weiterlaufen; die App stellt Fortsetzungen dar. Zusätzliche kurze Pausen innerhalb einer Lektion sind eigene Abschnitte mit Dauer.

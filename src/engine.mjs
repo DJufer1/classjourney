@@ -1,5 +1,10 @@
 export const DAYS = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+export const DEFAULT_LESSONS = [{"number":1,"start":"08:15","end":"09:00"},{"number":2,"start":"09:00","end":"09:45"},{"number":3,"start":"10:15","end":"11:00"},{"number":4,"start":"11:05","end":"11:50"},{"number":5,"start":"11:55","end":"12:40"},{"number":6,"start":"13:45","end":"14:30"},{"number":7,"start":"14:35","end":"15:20"},{"number":8,"start":"15:35","end":"16:20"},{"number":9,"start":"16:25","end":"17:10","marker":"*"},{"number":10,"start":"17:15","end":"18:00","startAssumed":true}];
 export const ICONS = {idea:0,puzzle:1,break:2,notebook:3,talk:4,check:5,health:6,hygiene:7,care:8,mobility:9,resources:10,rest:11};
+export function defaultLessonSlots(numbers=DEFAULT_LESSONS.map(l=>l.number)){
+  if(!Array.isArray(numbers)||numbers.some(n=>!DEFAULT_LESSONS.some(l=>l.number===n)))throw new Error('Unbekannte Standardlektion.');
+  return DEFAULT_LESSONS.filter(l=>numbers.includes(l.number)).map(l=>({start:l.start,end:l.end}));
+}
 export function minutes(value) {
   if (!/^\d{2}:\d{2}$/.test(value)) throw new Error('Bitte eine gültige Uhrzeit eingeben.');
   const [h,m]=value.split(':').map(Number);
@@ -34,7 +39,9 @@ export function schedule(plan) {
       const overflow=slotIndex>=slots.length;
       const amount=overflow?left:Math.min(left,slots[slotIndex].end-cursor);
       const segment={id:`${activity.id}-${part++}`,activityId:activity.id,activity,start:cursor,end:cursor+amount,duration:amount,overflow,kind:'activity'};
-      segments.push(segment);entry.segments.push(segment);
+      const previous=entry.segments.at(-1);
+      if(previous&&previous.end===segment.start&&previous.overflow===segment.overflow){previous.end=segment.end;previous.duration+=amount;}
+      else{segments.push(segment);entry.segments.push(segment);}
       if(overflow)entry.overflow+=amount;
       cursor+=amount;left-=amount;
     }
