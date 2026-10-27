@@ -22,7 +22,8 @@ function Invoke-InstallerTest([string]$taskSetup,[string]$taskMode,[string]$task
 $taskBefore=Invoke-InstallerTest "dist-native/$taskPrevious/ClassJourney-Setup-Windows-x64.exe" 'write' $taskPrevious
 $taskAfter=Invoke-InstallerTest "dist-native/$taskVersion/ClassJourney-Setup-Windows-x64.exe" 'read' $taskVersion
 $taskProtocol=(Get-ItemProperty -LiteralPath 'HKCU:\Software\Classes\classjourney\shell\open\command').'(default)'
-if(-not $taskProtocol.Contains($taskInstall)){throw 'The browser-to-app protocol does not point to this installation.'}
+$taskExpectedProtocol='"{0}" "%1"' -f (Join-Path $taskInstall 'ClassJourney.exe')
+if($taskProtocol -ne $taskExpectedProtocol){throw 'The browser-to-app protocol does not point to this installation with quoted arguments.'}
 if(-not $taskBefore.backupCreated -or -not $taskAfter.fixtureRetained){throw 'Plans or backup did not survive the update.'}
 @{system='Windows x64';previousVersion=$taskBefore.version;installedVersion=$taskAfter.version;realInstallerUpgrade=$true;browserAppProtocolRegistered=$true;ownPlansImagesAndSettingsRetained=$true;backupCreated=$true} | ConvertTo-Json | Set-Content -LiteralPath 'dist-native/update-test-windows.json' -Encoding utf8
 Write-Output 'Passed: real Windows installer upgrade retains the complete local collection and backup.'

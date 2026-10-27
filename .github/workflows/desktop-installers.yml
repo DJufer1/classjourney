@@ -16,6 +16,8 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - run: npm test
       - run: node scripts/get-native-baseline.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: node scripts/build-desktop.mjs --platform win
       - name: Test real installer upgrade with saved plans
         shell: pwsh
@@ -40,6 +42,8 @@ jobs:
       - run: npm ci --no-audit --no-fund
       - run: npm test
       - run: node scripts/get-native-baseline.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: node scripts/build-desktop.mjs --platform mac
       - name: Test DMG installation and replacement on Apple Silicon
         run: node scripts/test-mac-installer.mjs
