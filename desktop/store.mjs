@@ -6,14 +6,26 @@ import {validateCollection} from '../src/engine.mjs';
 export class CollectionStore{
   constructor(directory){this.directory=path.resolve(directory);this.file=path.join(this.directory,'collection.json');this.queue=Promise.resolve();}
   async load(){await this.flush();try{return validateCollection(JSON.parse(await fs.readFile(this.file,'utf8')));}catch(error){if(error.code==='ENOENT')return null;throw error;}}
-  save(raw){
+  async write(raw){
     const data=validateCollection(raw),text=JSON.stringify(data);
     if(Buffer.byteLength(text)>150000000)throw new Error('Die Sammlung ist zu gross. Bitte als Datei sichern.');
-    const job=async()=>{
       await fs.mkdir(this.directory,{recursive:true});
       const temporary=path.join(this.directory,'collection-'+randomUUID()+'.tmp');
       try{const file=await fs.open(temporary,'wx');try{await file.writeFile(text,'utf8');await file.sync();}finally{await file.close();}await fs.rename(temporary,this.file);}
       catch(error){await fs.unlink(temporary).catch(()=>{});throw error;}
+    return data;
+  }
+  save(raw){
+    const data=validateCollection(raw),job=()=>this.write(data);
+    const next=this.queue.then(job,job);this.queue=next.catch(()=>{});return next;
+  }
+  transact(transform,{backup=false}={}){
+    const job=async()=>{
+      let current=null;try{current=validateCollection(JSON.parse(await fs.readFile(this.file,'utf8')));}catch(error){if(error.code!=='ENOENT')throw error;}
+      const result=await transform(current);if(!result?.collection)return result;
+      let savedBackup=null;
+      if(backup&&current){const folder=path.join(this.directory,'backups');await fs.mkdir(folder,{recursive:true});savedBackup=path.join(folder,'vor-ki-'+Date.now()+'-'+randomUUID()+'.json');await fs.copyFile(this.file,savedBackup,fs.constants.COPYFILE_EXCL);}
+      return {...result,collection:await this.write(result.collection),backup:savedBackup};
     };
     const next=this.queue.then(job,job);this.queue=next.catch(()=>{});return next;
   }

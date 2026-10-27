@@ -129,3 +129,34 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
   .plan-image { height: 146px; }
   .now-label::before { display: none; }
 }
+
+/* Comic panels give the lesson character while keeping the reading area clear. */
+.lesson-title { border: 1px solid #2b46692b; }
+.lesson-clock, .lesson-countdown {
+  background: #fffef9f5; border: 1.5px solid #2b466950;
+  box-shadow: 3px 4px 0 #2b46691c; backdrop-filter: none;
+}
+.journey-card {
+  border: 2px solid #294665; border-left: 6px solid var(--card-accent);
+  border-radius: 18px 14px 18px 9px; background: #fffefc;
+  box-shadow: 4px 5px 0 #29466526;
+}
+.journey-card[data-icon='idea'] { --card-accent: #f2ba3e; }
+.journey-card[data-icon='puzzle'], .journey-card[data-icon='notebook'] { --card-accent: #9983d7; }
+.journey-card[data-icon='talk'] { --card-accent: #388bd0; }
+.journey-card[data-icon='resources'], .journey-card[data-icon='care'], .journey-card[data-icon='check'] { --card-accent: #23a58e; }
+.journey-card.active {
+  border-color: #294665; border-left-color: var(--card-accent);
+  background: #fffefb; box-shadow: 0 0 0 3px #ffffffc2, 5px 7px 0 #29466536;
+}
+.journey-card h2 { font-weight: 750; color: #213f60; }
+.journey-card .phase-number {
+  border: 1.5px solid #294665; background: #f2edff; color: #294665;
+  border-radius: 7px; transform: rotate(3deg); box-shadow: 1px 2px 0 #29466520;
+}
+.journey-card.active .phase-number { background: #ffe28a; color: #294665; }
+.journey-card.fixed-break { border-color: #6faaa3; border-left-color: #58b7a5; }
+.journey-card.overflow { border-color: #b75d4a; border-left-color: #d16c53; background: #fff0e8; }
+.now-label { border: 1.5px solid #294665; box-shadow: 3px 3px 0 #29466535; }
+.lesson-bottom { border: 1.5px solid #29466550; box-shadow: 3px 4px 0 #29466515; }
+.overview-item.active { background: #ffedb5; border-top-color: #edba48; color: #294665; }

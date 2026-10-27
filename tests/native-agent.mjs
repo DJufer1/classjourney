@@ -30,6 +30,8 @@ test('the fixed app folder preserves AI edits unless the user chooses a backed-u
   const target=path.join(first.root,'data/plans.json');await fs.writeFile(target,'agent edit');
   const existing=await workspace.prepare(files,async()=>'existing');assert.equal(existing.existing,true);assert.equal(await fs.readFile(target,'utf8'),'agent edit');
   assert.equal((await workspace.prepare(files,async()=>'cancel')).cancelled,true);
+  const updatedFiles=files.map(file=>file.name.endsWith('SKILL.md')?{...file,content:'Current comic skill with automatic app delivery'}:file);
+  const refreshed=await workspace.prepare(updatedFiles,async()=>'existing');assert.ok(refreshed.instructionsBackup);assert.equal(await fs.readFile(path.join(first.root,'Anweisungen KI-Agent/class-journey/SKILL.md'),'utf8'),'Current comic skill with automatic app delivery');assert.equal(await fs.readFile(target,'utf8'),'agent edit');assert.equal(await fs.readFile(path.join(refreshed.instructionsBackup,'Anweisungen KI-Agent/class-journey/SKILL.md'),'utf8'),'skill');
   const replaced=await workspace.prepare(files,async()=>'replace');assert.equal(await fs.readFile(path.join(replaced.backup,'data/plans.json'),'utf8'),'agent edit');assert.equal(await fs.readFile(target,'utf8'),files[0].content);
   await assert.rejects(()=>workspace.prepare([{...files[0],name:'../escape.json'},...files.slice(1)],async()=>'replace'));
 });

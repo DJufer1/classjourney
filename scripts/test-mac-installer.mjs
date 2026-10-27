@@ -24,6 +24,7 @@ for(const [version,mode]of [[previousVersion,'write'],[current,'read']]){
   const report=JSON.parse(await fs.readFile(path.join(data,'self-test-'+mode+'.json'),'utf8'));if(report.version!==version)throw new Error('Wrong running Mac version.');
 }
 const final=JSON.parse(await fs.readFile(path.join(data,'self-test-read.json'),'utf8'));
+if(!final.automaticAgentPlanAvailable||!final.agentOutputAcknowledged)throw new Error('Automatic AI output is not available in the installed Mac app.');
 if(!final.fixtureRetained)throw new Error('The collection did not survive the Mac app replacement.');
-const report={system:'macOS '+process.arch,previousVersion,installedVersion:current,realDmgInstallAndReplacement:true,ownPlansImagesAndSettingsRetained:true,architectures,signature:'ad-hoc; not Apple Developer ID / notarized'};
+const report={system:'macOS '+process.arch,previousVersion,installedVersion:current,realDmgInstallAndReplacement:true,automaticAgentOutputVerified:true,ownPlansImagesAndSettingsRetained:true,architectures,signature:'ad-hoc; not Apple Developer ID / notarized'};
 await fs.writeFile('dist-native/update-test-mac-'+process.arch+'.json',JSON.stringify(report,null,2));console.log(JSON.stringify(report));

@@ -3,8 +3,10 @@
 import argparse
 import base64
 import json
+import os
 import sys
 import time
+import uuid
 from pathlib import Path
 
 def embedded(root, reference):
@@ -37,7 +39,15 @@ def build(root):
     out = root / 'output'
     out.mkdir(exist_ok=True)
     collection = out / 'Sammlung.classjourney.json'
-    collection.write_text(json.dumps(data, ensure_ascii=False, separators=(',', ':')), encoding='utf-8')
+    temporary = out / ('Sammlung-' + uuid.uuid4().hex + '.tmp')
+    try:
+        with temporary.open('w', encoding='utf-8') as handle:
+            json.dump(data, handle, ensure_ascii=False, separators=(',', ':'))
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, collection)
+    finally:
+        temporary.unlink(missing_ok=True)
     app = root / 'ClassJourney.html'
     if app.exists():
         update(app, collection, out / 'ClassJourney-neu.html')

@@ -56,3 +56,9 @@ Quellen in `src/`, Beispiel-Sammlung in `content/collection.json`, Skill «Class
 Desktop: `npm ci`, `npm run test:native`, `node scripts/build-desktop.mjs --platform win` beziehungsweise `--platform mac` auf einem Mac. Installer liegen unter `dist-native/<Version>/`. Lokale Entwicklung verwendet den getrennten Datenordner «ClassJourney-Development». Die Tests mit installierter App akzeptieren nur einen ausdrücklich angegebenen Test-Datenordner.
 
 Die Browser-Ansicht zeigt dieselben zwei KI-Wege. «Verknüpfen» öffnet die installierte App ab 1.2.2 über `classjourney://connect`; dieses Protokoll öffnet nur die KI-Auswahl und akzeptiert keine Ordner, Befehle oder Prompts von Webseiten. Die KI selbst wird erst durch den Klick in der App geöffnet. «Startprompt kopieren» bereitet automatisch die aktuellen Browser-Dokumente als neuen Unterordner oder ZIP vor. Browser und installierte App behalten getrennte lokale Sammlungen.
+
+## Direkte KI-Planübernahme
+
+Die installierte App überwacht ihren festen Ordner `KI-Agent/output/Sammlung.classjourney.json`. Die KI liest «Anweisungen KI-Agent», bearbeitet die lesbaren Pläne und Bilder und führt `python scripts/build_collection.py --root .` aus. Neue und geänderte Pläne erscheinen automatisch in der originalen App. Bei geschlossener App werden sie beim nächsten Start übernommen; eine offene Planbearbeitung wird abgewartet. `APP-Verbindung.json` und `output/APP-Status.json` beschreiben und bestätigen die lokale Verbindung. Die App legt vor der Übernahme eine Sicherung an und erhält bei parallelen Änderungen beide Fassungen. Import und Export bleiben fürs Kollegium sowie die portable Browserdatei erhalten.
+
+Der Skill verwendet jetzt einen verspielten Graphic-Novel-Stil mit Tuschekonturen, kräftigen Farben und konkreten Themenmotiven. Der Demo-Tag zeigt den neuen Stil mit zwölf Comic-Symbolen. Fachlicher Themenbezug und CH-Referenzen bleiben Pflicht; die Mitte bleibt lesbar.

@@ -4,13 +4,14 @@ import os from 'node:os';
 import {execFile,spawn} from 'node:child_process';
 import {promisify} from 'node:util';
 import {randomUUID} from 'node:crypto';
-import {formatMessage,normalizedLanguage} from '../src/i18n.mjs';
+import {formatMessage,normalizedLanguage,translateText} from '../src/i18n.mjs';
 const execute=promisify(execFile);
 const exists=async file=>{try{await fs.access(file);return true;}catch{return false;}};
 
 export const PERMISSION_PROMPT='Ich erteile dir für meine ClassJourney-Planung Lese- und Schreibzugriff auf «{0}» samt Unterordnern. Prüfe deinen Zugriff und fordere nötige Ordnerfreigaben jetzt in deiner KI-Anwendung an. Lies vollständig START_HERE.md und Anweisungen KI-Agent/class-journey/SKILL.md samt Referenzen. Lerne den Skill «Class Journey» / «Classroom Journey» und führe seine Schritte bei meinen Planungsaufträgen aus. Falls Unterlagen, Klasse oder Lektionen fehlen, frage danach. Programmdateien liegen unter «{1}»; dort ist bei Bedarf nur Lesezugriff vorgesehen. Erstelle neue Pläne und Bilder im Planungsordner sowie output/Sammlung.classjourney.json. Antworte auf Deutsch.';
 export function permissionPrompt(root,installationDirectory,language='de'){
-  return formatMessage(PERMISSION_PROMPT,[root,installationDirectory],normalizedLanguage(language));
+  const locale=normalizedLanguage(language);
+  return formatMessage(PERMISSION_PROMPT,[root,installationDirectory],locale)+' '+translateText('Lies APP-Verbindung.json. Erzeuge die Ausgabe mit python scripts/build_collection.py --root .; ClassJourney übernimmt output/Sammlung.classjourney.json automatisch. Prüfe output/APP-Status.json. Kein manueller Import ist nötig.',locale);
 }
 export function codexLink(root,prompt){
   const link=new URL('codex://threads/new');link.searchParams.set('path',root);link.searchParams.set('prompt',prompt);
@@ -51,11 +52,11 @@ export async function openAgent(plan,{openExternal,copyPrompt},prompt){
   if(plan.kind==='url'){await openExternal(plan.url);return;}
   await new Promise((resolve,reject)=>{const child=spawn(plan.executable,plan.args,{detached:true,stdio:'ignore',shell:false,windowsHide:false});child.once('error',reject);child.once('spawn',()=>{child.unref();resolve();});});
 }
-export async function copyAgentStart(workspace,files,choose,copy,language='de'){const prepared=await workspace.prepare(files,choose,language);if(prepared.cancelled)return prepared;await copy(prepared.prompt);return {root:prepared.root,prompt:prepared.prompt,copied:true,permissionConfirmationRequired:true};}
+export async function copyAgentStart(workspace,files,choose,copy,language='de'){const prepared=await workspace.prepare(files,choose,language);if(prepared.cancelled)return prepared;await copy(prepared.prompt);return {root:prepared.root,prompt:prepared.prompt,copied:true,snapshotWritten:prepared.snapshotWritten,permissionConfirmationRequired:true};}
 
 export class AgentWorkspace{
   constructor(dataDirectory,installationDirectory){this.dataDirectory=path.resolve(dataDirectory);this.root=path.join(this.dataDirectory,'KI-Agent');this.installationDirectory=installationDirectory;}
-  info(language='de'){return {root:this.root,installationDirectory:this.installationDirectory,prompt:permissionPrompt(this.root,this.installationDirectory,language)};}
+  info(language='de'){return {root:this.root,installationDirectory:this.installationDirectory,outputFile:path.join(this.root,'output','Sammlung.classjourney.json'),automaticImport:true,prompt:permissionPrompt(this.root,this.installationDirectory,language)};}
   async files(raw,language='de'){
     if(!Array.isArray(raw)||raw.length>4000)throw new Error('Ungültige KI-Dokumente.');
     let bytes=0;const seen=new Set(),files=[];
@@ -69,7 +70,8 @@ export class AgentWorkspace{
       bytes+=content.length;if(bytes>150000000)throw new Error('Der KI-Ordner ist zu gross.');files.push({name:entry.name,content});
     }
     if(!seen.has('data/plans.json')||!seen.has('Anweisungen KI-Agent/class-journey/SKILL.md'))throw new Error('Plandaten oder Skill fehlen.');
-    files.push({name:'START_PROMPT.txt',content:Buffer.from(this.info(language).prompt)});return files;
+    files.push({name:'START_PROMPT.txt',content:Buffer.from(this.info(language).prompt)});
+    files.push({name:'APP-Verbindung.json',content:Buffer.from(JSON.stringify({format:'classjourney-app-link',version:1,automaticImport:true,root:this.root,output:'output/Sammlung.classjourney.json',status:'output/APP-Status.json',instructions:'Read the complete Class Journey skill. Write plans through scripts/build_collection.py. The installed app reads the output automatically while running or on its next start; never write the app collection.json directly.'},null,2))});return files;
   }
   async safeTarget(name){
     const target=path.resolve(this.root,...name.split('/'));if(!target.startsWith(this.root+path.sep))throw new Error('Ungültiger Zielpfad.');
@@ -85,7 +87,7 @@ export class AgentWorkspace{
     for(const file of files){const target=await this.safeTarget(file.name);try{const current=await fs.readFile(target);present=true;if(!current.equals(file.content))different=true;}catch(error){if(error.code==='ENOENT')different=true;else throw error;}}
     let backup=null;
     if(present&&different){
-      const choice=await choose();if(choice==='cancel')return {cancelled:true};if(choice==='existing'){await this.ensureInstructions(files);return {...this.info(language),existing:true};}
+      const choice=await choose();if(choice==='cancel')return {cancelled:true};if(choice==='existing'){const instructionsBackup=await this.ensureInstructions(files);return {...this.info(language),existing:true,snapshotWritten:false,instructionsBackup};}
       if(choice!=='replace')throw new Error('Ungültige Auswahl.');
       backup=path.join(this.dataDirectory,'KI-Sicherungen','vor-verknuepfung-'+Date.now()+'-'+randomUUID().slice(0,8));
       if(!backup.startsWith(this.dataDirectory+path.sep))throw new Error('Ungültiger Sicherungspfad.');
@@ -94,9 +96,16 @@ export class AgentWorkspace{
     if(!present||different){
       for(const file of files){const target=await this.safeTarget(file.name);await fs.mkdir(path.dirname(target),{recursive:true});const temporary=target+'.'+randomUUID()+'.tmp';try{await fs.writeFile(temporary,file.content,{flag:'wx'});await fs.rename(temporary,target);}catch(error){await fs.unlink(temporary).catch(()=>{});throw error;}}
     }
-    return {...this.info(language),backup,existing:present&&!different};
+    return {...this.info(language),backup,existing:present&&!different,snapshotWritten:!present||different};
   }
   async ensureInstructions(files){
-    for(const file of files.filter(file=>file.name.startsWith('Anweisungen KI-Agent/')||['START_HERE.md','AGENTS.md','CLAUDE.md','START_PROMPT.txt'].includes(file.name))){const target=await this.safeTarget(file.name);try{const current=await fs.readFile(target);if(!current.length)throw new Error('Eine Skill-Datei ist leer. Bitte den App-Stand übertragen.');}catch(error){if(error.code!=='ENOENT')throw error;await fs.mkdir(path.dirname(target),{recursive:true});await fs.writeFile(target,file.content,{flag:'wx'});}}
+    let backup=null;
+    for(const file of files.filter(file=>file.name.startsWith('Anweisungen KI-Agent/')||['START_HERE.md','AGENTS.md','CLAUDE.md','START_PROMPT.txt','APP-Verbindung.json','scripts/build_collection.py','scripts/update_collection.py'].includes(file.name))){
+      const target=await this.safeTarget(file.name);let current=null;try{current=await fs.readFile(target);}catch(error){if(error.code!=='ENOENT')throw error;}
+      if(current?.equals(file.content))continue;
+      if(current){backup??=path.join(this.dataDirectory,'KI-Sicherungen','vor-skill-update-'+Date.now()+'-'+randomUUID());const saved=path.join(backup,...file.name.split('/'));await fs.mkdir(path.dirname(saved),{recursive:true});await fs.copyFile(target,saved,fs.constants.COPYFILE_EXCL);}
+      await fs.mkdir(path.dirname(target),{recursive:true});const temporary=target+'.'+randomUUID()+'.tmp';try{await fs.writeFile(temporary,file.content,{flag:'wx'});await fs.rename(temporary,target);}finally{await fs.unlink(temporary).catch(()=>{});}
+    }
+    return backup;
   }
 }

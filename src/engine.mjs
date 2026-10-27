@@ -8,7 +8,7 @@ export function artFingerprint(value){
   return value.length+':'+hash.toString(16);
 }
 export function refreshBuiltinArt(current,shipped,previous={}){
-  const matches=(src,signature)=>typeof signature==='string'&&typeof src==='string'&&String(src.length)===signature.split(':')[0]&&artFingerprint(src)===signature;
+  const matches=(src,signature)=>Array.isArray(signature)?signature.some(value=>matches(src,value)):typeof signature==='string'&&typeof src==='string'&&String(src.length)===signature.split(':')[0]&&artFingerprint(src)===signature;
   let changed=false;
   for(const [id,asset] of Object.entries(shipped.backgrounds)){
     const old=current.backgrounds[id];

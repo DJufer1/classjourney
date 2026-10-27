@@ -12,3 +12,9 @@ assert.equal(current.backgrounds.private.src,'private-source');
 assert.equal(current.atlas,'new-atlas');assert.equal(current.fageAtlas,'my-fage-atlas');
 assert.equal(refreshBuiltinArt(current,shipped,previous),false);
 console.log('Passed: shipped artwork refreshes once; custom backgrounds and custom atlases remain intact.');
+// People skipping a release still receive the shipped comic art; personal art remains untouched.
+for(const source of ['v1-source','v2-source']){
+  const asset={backgrounds:{resources:{src:source},private:{src:'my-drawing'}},atlas:source,fageAtlas:'my-custom-fage'};
+  const history={backgrounds:{resources:[artFingerprint('v1-source'),artFingerprint('v2-source')]},atlas:[artFingerprint('v1-source'),artFingerprint('v2-source')],fageAtlas:[artFingerprint('v1-fage')]};
+  assert.equal(refreshBuiltinArt(asset,shipped,history),true);assert.equal(asset.backgrounds.resources.src,'new-resource');assert.equal(asset.atlas,'new-atlas');assert.equal(asset.backgrounds.private.src,'my-drawing');assert.equal(asset.fageAtlas,'my-custom-fage');
+}
