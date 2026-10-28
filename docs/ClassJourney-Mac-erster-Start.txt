@@ -1,0 +1,20 @@
+ClassJourney auf dem Mac: erster Start
+
+Die App ist nicht von Apple notarisiert. Du kannst ClassJourney einzeln
+freigeben, wenn du dem Download aus DJufer1/classjourney vertraust.
+Dafür brauchst du kein kostenpflichtiges Apple-Developer-Konto.
+
+1. ClassJourney-Mac-universal.dmg öffnen und die App nach Programme ziehen.
+2. ClassJourney aus Programme öffnen. Bei der Meldung "Apple konnte nicht
+   überprüfen ..." auf "Fertig" klicken.
+3. Systemeinstellungen > Datenschutz und Sicherheit öffnen, nach unten
+   scrollen und bei ClassJourney auf "Dennoch öffnen" klicken.
+4. In der folgenden Meldung "Öffnen" bestätigen. Falls verlangt, auf dem
+   Mac authentifizieren.
+
+macOS speichert diese App als Ausnahme. Nach einem Update kann die
+Freigabe erneut nötig sein. Auf verwalteten Schul-Macs kann die IT
+diese Einstellung einschränken.
+
+Apple-Anleitung: https://support.apple.com/de-ch/102445
+Downloads: https://github.com/DJufer1/classjourney/releases/latest

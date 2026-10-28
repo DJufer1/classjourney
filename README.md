@@ -6,7 +6,18 @@ Ein lokaler Unterrichtsbildschirm: Tagespläne nach Klasse, Wochentag und Themen
 
 Windows: Setup ausführen. Mac: DMG öffnen und ClassJourney nach «Programme» ziehen. Der Mac-Installer enthält die App für Intel und Apple Silicon. Die installierte Anwendung funktioniert während des Unterrichts offline.
 
-Die Installer haben derzeit kein Herstellerzertifikat. Der Mac-Build ist ad hoc signiert und nicht von Apple notarisiert; das Betriebssystem kann eine manuelle Freigabe verlangen. Ein vollständig automatisches Mac-Update wird deshalb nicht angeboten.
+Die Installer haben derzeit kein Herstellerzertifikat. Die Mac-App ist ad hoc signiert und nicht von Apple notarisiert. Für den ersten Start des Downloads ist deshalb eine manuelle Freigabe erforderlich. Ein kostenpflichtiges Apple-Developer-Konto ist für diese Freigabe nicht nötig.
+
+**Mac: erster Start**
+
+1. ClassJourney aus der DMG nach «Programme» ziehen und dort öffnen.
+2. Die Meldung «Apple konnte nicht überprüfen …» mit «Fertig» schliessen.
+3. **Systemeinstellungen → Datenschutz und Sicherheit** öffnen, nach unten scrollen und bei ClassJourney **«Dennoch öffnen»** wählen.
+4. Die folgende Meldung mit **«Öffnen»** bestätigen; falls verlangt, auf dem Mac authentifizieren.
+
+Damit wird diese App als Ausnahme gespeichert. Nach einem Update kann erneut eine Freigabe nötig sein. Bei verwalteten Schul-Macs kann die IT diese Einstellung einschränken. [Apple-Anleitung](https://support.apple.com/de-ch/102445) · [Anleitung zum Weitergeben](docs/ClassJourney-Mac-erster-Start.txt).
+
+Die Mac-Tests prüfen Programmstart, App-Ersetzung und Datenerhalt auf Intel und Apple Silicon. Die erste Gatekeeper-Freigabe eines Internetdownloads wurde nicht getestet. Mac-Updates werden heruntergeladen und manuell installiert.
 
 **[Zusätzlich: portabler Ordner für Windows & Mac](https://github.com/DJufer1/classjourney/releases/latest/download/ClassJourney-Windows-Mac.zip)**
 
