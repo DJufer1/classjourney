@@ -6,3 +6,6 @@ node_modules/
 *.log
 .DS_Store
 private/
+
+# Local browser verification screenshots and fixtures
+tmp/

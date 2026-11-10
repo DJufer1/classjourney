@@ -1,0 +1,3 @@
+const http=require('node:http'),fs=require('node:fs/promises'),path=require('node:path');
+const root=path.resolve(__dirname,'../docs');
+http.createServer(async(req,res)=>{try{let name=decodeURIComponent(new URL(req.url,'http://localhost').pathname);if(name.endsWith('/'))name+='index.html';const file=path.resolve(root,'.'+name);if(!file.startsWith(root+path.sep))throw new Error();const body=await fs.readFile(file);res.writeHead(200,{'Content-Type':file.endsWith('.js')?'application/javascript':file.endsWith('.json')?'application/json':'text/html; charset=utf-8','Cache-Control':'no-cache'});res.end(body);}catch{res.writeHead(404);res.end();}}).listen(4173,'127.0.0.1',()=>console.log('Local: http://127.0.0.1:4173/'));

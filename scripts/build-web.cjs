@@ -1,0 +1,47 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const crypto = require('node:crypto');
+const root = path.resolve(__dirname, '..');
+const read = name => fs.readFileSync(path.join(root, name), 'utf8');
+const out = (name, value) => { const file = path.join(root, 'docs', name); fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file, value); };
+let html = read('docs/ClassJourney.html');
+html = html.replace(/content="default-src 'none';[^\"]+"/, 'content="default-src \'none\'; img-src \'self\' data: blob:; style-src \'unsafe-inline\'; script-src \'unsafe-inline\' \'self\'; connect-src \'self\'; worker-src \'self\'; font-src \'none\'; base-uri \'none\'; object-src \'none\'"');
+function replace(before, after) { if (html.split(before).length !== 2) throw new Error('Ambiguous build insertion: ' + before.slice(0, 90)); html = html.replace(before, () => after); }
+function block(id, text) { const pattern = new RegExp('(<script\\b[^>]*id="' + id + '"[^>]*>)[\\s\\S]*?(<\\/script>)'); if (!pattern.test(html)) throw new Error('Missing block: ' + id); html = html.replace(pattern, (_, start, end) => start + text.replace(/<\/script/gi, '<\\/script') + end); }
+const originalSkill = read('skill/class-journey/SKILL.md');
+let skill = originalSkill.split('## In die Anwendung einfügen')[0];
+skill = skill.replace('Verwende beim automatischen Vorbereiten nicht einfach die Standardbibliothek als Ersatz für die gewünschte individuelle Gestaltung.', 'Die zwölf vorgefertigten Icons bleiben erhalten. Für passende wiederkehrende Tätigkeiten (Einstieg, Aufgabe, Pause, Arbeiten, Austausch, Sicherung, Gesundheit, Hygiene, Pflege, Mobilität, Ressourcen, Ruhe) dürfen sie verwendet werden. Individuelle thematische Bilder nur ergänzen, wenn das Thema sie erfordert oder die Lehrperson sie wünscht.');
+skill = skill.replace('Erstelle die benötigten Motive mit dem verfügbaren Bildwerkzeug neu.', 'Verwende passende vorhandene Icons. Erstelle zusätzlich benötigte individuelle Motive mit dem verfügbaren Bildwerkzeug neu.');
+skill = skill.replace('Speichere Einzelbilder je Auftrag im Feld `image` als eingebettete Bilddaten.', 'Speichere neue Einzelbilder als Dateien unter assets/ und referenziere sie mit imageFile. Für Standardicons bleibt image leer und icon enthält die passende Kennung.');
+skill = skill.replace('mindestens rund 1600 Pixel breit', 'etwa 1600 Pixel breit (für die Website in der Regel ausreichend)');
+skill += '\n' + read('src/browser/workspace-protocol.md');
+const schema = JSON.parse(read('skill/class-journey/references/DATENFORMAT.json'));
+schema.title = 'ClassJourney · lokale Websammlung';
+schema.properties.workspaceAssets = {const: true};
+const background = schema.properties.assets.properties.backgrounds.additionalProperties;
+background.required = ['name', 'srcFile']; background.properties.srcFile = {type:'string', description:'Relativer Bildpfad ab dem ClassJourney-Ordner, z. B. assets/backgrounds/thema.webp. Keine externen Adressen und kein ..'};
+schema.properties.assets.required = ['backgrounds','atlasFile','fageAtlasFile'];
+for (const key of ['atlas','fageAtlas']) schema.properties.assets.properties[key+'File'] = {type:'string', description:'Vorhandenen relativen Dateiverweis unverändert erhalten. 3×2-Raster mit sechs Icons.'};
+schema.$defs.activity.properties.imageFile = {type:'string', description:'Optionaler relativer Bildpfad. Leeres image ohne imageFile verwendet das vorgefertigte Icon.'};
+const collection = JSON.parse(read('content/web-collection.json'));
+if (collection.plans.length !== 1 || !collection.plans[0].isDemo || collection.plans[0].id !== 'demo-tag') throw new Error('Only demo data may ship.');
+collection.libraryId = 'classjourney-starter-v1';
+const info = {name:'ClassJourney',version:'1.3.0-web',url:'https://djufer1.github.io/classjourney/',storage:'local',artRevision:4};
+block('embedded-data', JSON.stringify(collection).replaceAll('<','\\u003c'));
+block('ai-instructions', skill);
+block('data-schema', JSON.stringify(schema,null,2));
+block('app-info', JSON.stringify(info));
+replace("(()=>{'use strict';\nconst app=document.getElementById('app');", read('src/browser/agent-workspace.js') + "\n(()=>{'use strict';\nconst app=document.getElementById('app');");
+replace('openStorage().then(async()=>{nativeStorageReady=true;', read('src/browser/integration.js') + '\nopenStorage().then(async()=>{await browserWorkspace.restore();nativeStorageReady=true;');
+// Keep the hosted application's database name so existing browser collections survive.
+replace("window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;document.querySelectorAll('[data-action=install]').forEach(b=>b.hidden=false);});", "window.addEventListener('beforeinstallprompt',e=>e.preventDefault());");
+replace('</head>', '<style>\n' + read('src/browser/web.css') + '\n</style>\n</head>');
+out('index.html',html);
+out('Anweisungen KI-Agent/class-journey/SKILL.md',skill);
+out('Anweisungen KI-Agent/class-journey/references/LEKTIONEN.json',read('skill/class-journey/references/LEKTIONEN.json'));
+out('Anweisungen KI-Agent/class-journey/references/DATENFORMAT.json',JSON.stringify(schema,null,2));
+out('.nojekyll','');
+const revision=crypto.createHash('sha256').update(html).digest('hex').slice(0,16);
+out('sw.js',read('src/browser/sw.js').replaceAll('__REVISION__',revision));
+out('web-version.json',JSON.stringify({version:info.version,revision}));
+console.log(JSON.stringify({file:path.join(root,'docs/index.html'),bytes:Buffer.byteLength(html),revision,plans:collection.plans.length,backgrounds:Object.keys(collection.assets.backgrounds).length,icons:12}));

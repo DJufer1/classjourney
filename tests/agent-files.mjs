@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {buildAgentFiles,writeAgentFolder,AGENT_SKILL_PATH} from '../src/agent-files.mjs';
 
 const seed=JSON.parse(await fs.readFile(new URL('../content/collection.json',import.meta.url),'utf8'));
@@ -19,7 +20,7 @@ for(const [id,asset]of Object.entries(data.assets.backgrounds)){
 
 // Exercise the same directory-handle contract against real local files.
 const testRoot=new URL('../dist/',import.meta.url);await fs.mkdir(testRoot,{recursive:true});
-const directory=await fs.mkdtemp(path.join(path.resolve(testRoot.pathname.replace(/^\/(\w:)/,'$1')),'agent-write-'));
+const directory=await fs.mkdtemp(path.join(fileURLToPath(testRoot),'agent-write-'));
 const handle=base=>({
   async getDirectoryHandle(name,options={}){
     const target=path.join(base,name);

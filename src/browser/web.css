@@ -1,0 +1,8 @@
+.browser-folder-card{border:2px solid #d8dfe8;border-radius:16px;padding:18px;margin:14px 0;background:#f7fafc}
+.browser-folder-card h3{margin:7px 0 10px}.browser-folder-card p{line-height:1.5}
+.browser-folder-card .row{flex-wrap:wrap;gap:10px}.browser-folder-card button:disabled{opacity:.5;cursor:default}
+.browser-path-input{display:block;width:100%;box-sizing:border-box;margin:8px 0 12px;padding:12px;border:1px solid #9daebc;border-radius:8px;font-family:inherit}
+.browser-steps{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.browser-step{background:#e7f0f1;color:#24585e;border-radius:20px;padding:5px 10px;font-weight:600;font-size:12px}
+.browser-prompt-details summary{cursor:pointer;margin:12px 0;font-weight:600}.browser-prompt-details textarea{width:100%;min-height:160px;box-sizing:border-box}
+.browser-status-path{overflow-wrap:anywhere}.web-offline-note{color:#4e6370;font-size:13px}
+@media(max-width:650px){.browser-folder-card{padding:13px}.browser-folder-card button{white-space:normal}.agent-connect span{max-width:140px}.top-actions{flex-wrap:wrap}}

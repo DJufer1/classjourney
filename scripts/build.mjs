@@ -24,3 +24,6 @@ const cache='classjourney-'+createHash('sha256').update(pwa).digest('hex').slice
 fs.writeFileSync(path.join(out,'sw.js'),`const CACHE=${JSON.stringify(cache)};const BASE=new URL('./',self.location).href;const FILES=['index.html','manifest.webmanifest','icon-192.png','icon-512.png'];self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES.map(f=>new URL(f,BASE).href))).then(()=>self.skipWaiting())));self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('classjourney-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));self.addEventListener('fetch',e=>{if(e.request.method!=='GET'||new URL(e.request.url).origin!==self.location.origin)return;if(e.request.mode==='navigate'){e.respondWith(fetch(e.request).catch(()=>caches.match(new URL('index.html',BASE).href)));return;}e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request)));});`);
 fs.writeFileSync(path.join(out,'.nojekyll'),'');
 console.log(JSON.stringify({output:out,version:info.version,offlineBytes:Buffer.byteLength(html),plans:data.plans.length}));
+
+// The website has its own local-folder setup; the desktop/offline artifact stays compatible.
+await import('./build-web.cjs');
